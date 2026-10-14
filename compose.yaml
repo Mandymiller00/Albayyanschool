@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: albayyan-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:?Run scripts/start-database.ps1 to load DATABASE_URL}
+      POSTGRES_USER: ${POSTGRES_USER:?Run scripts/start-database.ps1 to load DATABASE_URL}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Run scripts/start-database.ps1 to load DATABASE_URL}
+    ports:
+      - "5432:5432"
+    volumes:
+      - school_management_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\""]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+volumes:
+  school_management_postgres_data:

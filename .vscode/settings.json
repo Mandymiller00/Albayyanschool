@@ -1,0 +1,4 @@
+{
+  "css.lint.unknownAtRules": "ignore",
+  "chat.agent.sandbox.network.allowLocalNetwork": false
+}
