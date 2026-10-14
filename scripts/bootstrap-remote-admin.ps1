@@ -16,22 +16,23 @@ function Read-SecretValue([string]$Prompt) {
   }
 }
 
+function Normalize-PostgresUrl([string]$Value, [string]$VariableName) {
+  $normalizedValue = $Value.Trim().Trim('"').Trim("'").Trim()
+  if ($normalizedValue -notmatch '^(?i:postgresql|postgres)://\S+$') {
+    throw "$VariableName must be a PostgreSQL connection string beginning with postgresql:// or postgres://."
+  }
+  return $normalizedValue
+}
+
 $databaseUrl = $null
 $directUrl = $null
 $adminPassword = $null
 try {
-  $databaseUrl = Read-SecretValue "Neon pooled DATABASE_URL"
-  $directUrl = Read-SecretValue "Neon direct DIRECT_URL"
+  $databaseUrl = Normalize-PostgresUrl (Read-SecretValue "Neon pooled DATABASE_URL") "DATABASE_URL"
+  $directUrl = Normalize-PostgresUrl (Read-SecretValue "Neon direct DIRECT_URL") "DIRECT_URL"
   $env:ADMIN_EMAIL = Read-Host "Initial administrator email"
   $env:ADMIN_NAME = Read-Host "Initial administrator name"
   $adminPassword = Read-SecretValue "Unique administrator password (at least 14 characters)"
-
-  if (-not $databaseUrl.StartsWith("postgresql://") -and -not $databaseUrl.StartsWith("postgres://")) {
-    throw "DATABASE_URL must be a PostgreSQL connection string."
-  }
-  if (-not $directUrl.StartsWith("postgresql://") -and -not $directUrl.StartsWith("postgres://")) {
-    throw "DIRECT_URL must be a PostgreSQL connection string."
-  }
 
   $env:DATABASE_URL = $databaseUrl
   $env:DIRECT_URL = $directUrl
