@@ -26,12 +26,21 @@ function Normalize-PostgresUrl([string]$Value, [string]$VariableName) {
   return $normalizedValue
 }
 
+function Read-ClipboardPostgresUrl([string]$VariableName, [string]$Label) {
+  [void](Read-Host "Copy the $Label Neon connection string, then press Enter here")
+  $clipboardValue = Get-Clipboard -Raw
+  if (-not $clipboardValue) {
+    throw "The clipboard is empty. Copy the full $Label connection string from Neon and try again."
+  }
+  return Normalize-PostgresUrl $clipboardValue $VariableName
+}
+
 $databaseUrl = $null
 $directUrl = $null
 $adminPassword = $null
 try {
-  $databaseUrl = Normalize-PostgresUrl (Read-SecretValue "Neon pooled DATABASE_URL") "DATABASE_URL"
-  $directUrl = Normalize-PostgresUrl (Read-SecretValue "Neon direct DIRECT_URL") "DIRECT_URL"
+  $databaseUrl = Read-ClipboardPostgresUrl "DATABASE_URL" "pooled"
+  $directUrl = Read-ClipboardPostgresUrl "DIRECT_URL" "direct/unpooled"
   $env:ADMIN_EMAIL = Read-Host "Initial administrator email"
   $env:ADMIN_NAME = Read-Host "Initial administrator name"
   $adminPassword = Read-SecretValue "Unique administrator password (at least 14 characters)"

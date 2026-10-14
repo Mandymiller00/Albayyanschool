@@ -35,7 +35,7 @@ npm ci
 .\scripts\bootstrap-remote-admin.ps1
 ```
 
-The script prompts for the two Neon connection strings and administrator credentials without echoing secrets, creates or resets the configured administrator account, and clears the temporary environment variables afterward. Only run it when intentionally creating or resetting that administrator.
+For each Neon URL prompt, use the **Copy** button in Neon, return to PowerShell, and press Enter without pasting or typing the URL. The script reads the clipboard directly so the connection string is not echoed in the terminal. Then enter the administrator email/name and type a unique password at the hidden password prompt. The script creates or resets that account and clears the temporary environment variables afterward. Only run it when intentionally creating or resetting that administrator.
 
 ## 5. Connect a custom domain (optional)
 
