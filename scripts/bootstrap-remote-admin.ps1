@@ -17,9 +17,11 @@ function Read-SecretValue([string]$Prompt) {
 }
 
 function Normalize-PostgresUrl([string]$Value, [string]$VariableName) {
-  $normalizedValue = $Value.Trim().Trim('"').Trim("'").Trim()
+  $normalizedValue = $Value.Trim().Trim('`').Trim('"').Trim("'").Trim()
+  $assignmentPattern = "^(?:export\s+)?$([Regex]::Escape($VariableName))\s*[:=]\s*"
+  $normalizedValue = [Regex]::Replace($normalizedValue, $assignmentPattern, "", [System.Text.RegularExpressions.RegexOptions]::IgnoreCase).Trim().Trim('`').Trim('"').Trim("'").Trim()
   if ($normalizedValue -notmatch '^(?i:postgresql|postgres)://\S+$') {
-    throw "$VariableName must be a PostgreSQL connection string beginning with postgresql:// or postgres://."
+    throw "$VariableName must contain a full Neon connection string beginning with postgresql:// or postgres:// (not just the endpoint hostname)."
   }
   return $normalizedValue
 }
