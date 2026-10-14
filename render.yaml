@@ -14,7 +14,7 @@ services:
       - key: DIRECT_URL
         sync: false
       - key: NEXTAUTH_URL
-        sync: false
+        value: https://albayyanschool.onrender.com
       - key: NEXTAUTH_SECRET
         sync: false
       - key: DEMO_LOGIN_ENABLED
